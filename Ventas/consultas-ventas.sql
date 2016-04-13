@@ -1,0 +1,5 @@
+--1) Para cada vendedor determine si realizó ventas de calzoncillos.
+--2) Muestre los clientes que no compraron bulones ni calzoncillos
+--3) Muestre los vendedores que hayan realizado ventas por más de míl pesos durante el mes de septiembre de 2011.
+--4) Muestre los productos que hayan sido comprados por alguna mujer mayor de cien años y por hombres de gaiman que tengan más de 50 años.
+--5) Obtenga el producto más comprado por el mejor cliente y muestre el ranking de los diez clientes que más unidades compraron de ese producto. Nota: el mejor cliente es el que más dinero gasta.
