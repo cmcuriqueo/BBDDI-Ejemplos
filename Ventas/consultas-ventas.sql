@@ -13,8 +13,8 @@ FROM vendedor v
 	GROUP BY v.nombre
 	) as vv
 	ON vv.nombre = v.nombre
-
-
+;
+--Otra forma
 SELECT DISTINCT v.nombre, (
 	SELECT COUNT(*) c_ventas
 	FROM venta vent
@@ -24,6 +24,7 @@ SELECT DISTINCT v.nombre, (
 	WHERE p.nombre ILIKE 'calzoncillo%' AND v.codigo = vent.vendedor
 	)
 FROM vendedor v
+;
 
 --2) Muestre los clientes que no compraron bulones ni calzoncillos
 SELECT c.nombre
@@ -39,7 +40,6 @@ WHERE c.nombre NOT IN (
 );
 
 --3) Muestre los vendedores que hayan realizado ventas por más de cien pesos durante el mes de marzo de 2011.BETWEEN
-
 SELECT v.nombre
 FROM vendedor v
 WHERE v.nombre IN (
@@ -64,6 +64,7 @@ WHERE v.cliente IN (
 	FROM cliente c
 	WHERE (c.sexo='F') AND (2016 - EXTRACT(YEAR from c.fecha_nacimiento) > 100)
 	);
+	
 --5) Obtenga el producto más comprado por el mejor cliente y muestre el ranking de los diez clientes que más unidades compraron de ese producto.
  --Nota: el mejor cliente es el que más dinero gasta.
 SELECT c.apellido || ', ' || c.nombre as nombre_cliente
