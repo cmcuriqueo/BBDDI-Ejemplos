@@ -42,13 +42,13 @@ DECLARE
 BEGIN
 	IF (TG_OP = 'INSERT') THEN
 		INSERT INTO cliente_log SELECT now(), 'INSERT', user;
-		RETURN NULL;
+		RETURN OLD;
 	ELSIF (TG_OP = 'UPDATE') THEN
 		INSERT INTO cliente_log SELECT now(), 'UPDATE', user;
-		RETURN NULL;
+		RETURN NEW;
 	ELSIF (TG_OP = 'DELETE') THEN
 		INSERT INTO cliente_log SELECT now(), 'DELETE', user;
-		RETURN NULL;
+		RETURN NEW;
 	END IF;
 	RETURN NULL;
 END;
@@ -68,3 +68,32 @@ SELECT * FROM cliente WHERE numero_documento = 39443529;
 --se pueda cargar para cada registro el usuario y de última actualización. Para que el  
 --trigger funcione   la   tabla   deberá   tener   definidos   los   campos   ​
 --usr_update (text) y ​time_update (timestamp). 
+
+
+ALTER TABLE cliente ADD COLUMN usr_update text DEFAULT NULL;
+ALTER TABLE cliente ADD COLUMN ​time_update timestamp DEFAULT NULL;
+ALTER TABLE vendedor ADD COLUMN usr_update text DEFAULT NULL;
+ALTER TABLE vendedor ADD COLUMN ​time_update timestamp DEFAULT NULL;
+ALTER TABLE producto ADD COLUMN usr_update text DEFAULT NULL;
+ALTER TABLE producto ADD COLUMN ​time_update timestamp DEFAULT NULL;
+ALTER TABLE venta ADD COLUMN usr_update text DEFAULT NULL;
+ALTER TABLE venta ADD COLUMN ​time_update timestamp DEFAULT NULL;
+
+CREATE OR REPLACE FUNCTION registrar_actualizacion() RETURNS TRIGGER AS $$
+DECLARE
+BEGIN
+	NEW.usr_update := user;
+	NEW.​time_update := now();
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER registrar_actualizacion
+BEFORE UPDATE ON cliente
+FOR EACH ROW EXECUTE PROCEDURE registrar_actualizacion();
+
+DROP TRIGGER registrar_actualizacion ON cliente
+
+UPDATE cliente SET nombre = 'Cesar Matias' WHERE numero_documento = 39443529 
+
+SELECT * FROM cliente WHERE numero_documento = 39443529;
