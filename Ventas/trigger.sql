@@ -89,7 +89,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER registrar_actualizacion
-BEFORE UPDATE ON cliente
+BEFORE INSERT OR UPDATE ON cliente
 FOR EACH ROW EXECUTE PROCEDURE registrar_actualizacion();
 
 DROP TRIGGER registrar_actualizacion ON cliente
@@ -97,3 +97,25 @@ DROP TRIGGER registrar_actualizacion ON cliente
 UPDATE cliente SET nombre = 'Cesar Matias' WHERE numero_documento = 39443529 
 
 SELECT * FROM cliente WHERE numero_documento = 39443529;
+
+--Ejercicio adicional: Escriba un trigger para que sólo el propietario o el comprador legítimo de la propiedad puedan crear un boleto de compraventa .
+CREATE OR REPLACE FUNCTION crear_boleto () RETURNS TRIGGER AS $$
+BEGIN
+	PERFORM * FROM propiedad
+		INNER JOIN boleto_compra_venta bcv
+		ON propiedad.id = bcv.propiedad
+		WHERE 
+			(propiedad.propietario = NEW.vendedor AND propiedad.id = NEW.propiedad) OR 
+			(bcv.comprador = NEW.vendedor AND bcv.propiedad = NEW.propiedad);
+	IF NOT FOUND THEN
+	   RAISE EXCEPTION 'No se puede ralizar la venta por que el vendedor no posee la propiedad';
+	END IF;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tg_control_boleto AFTER INSERT ON boleto_compra_venta FOR EACH ROW EXECUTE PROCEDURE crear_boleto ();
+
+INSERT INTO boleto_compra_venta VALUES (67678, 1, 20113099918, 27286542900, 1000000);
+
+
